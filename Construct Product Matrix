@@ -1,0 +1,43 @@
+class Solution {
+public:
+    vector<vector<int>> constructProductMatrix(vector<vector<int>>& grid) {
+        const int MOD = 12345;
+        vector<int> nums;
+        int m = grid.size(), n = grid[0].size();
+        for(int i = 0;i<m;i++){
+            for(int j = 0;j<n;j++){
+                nums.push_back(grid[i][j]);
+            }
+        }
+        int size = nums.size();
+        vector<unsigned long long int> prefix(size), suffix(size);
+        prefix[0] = nums[0];
+        suffix[size-1] = nums[size-1];
+        for(int i = 1;i<size;i++){
+            prefix[i] = (prefix[i-1] % MOD * nums[i] % MOD) % MOD;
+            suffix[size - i - 1] = (suffix[size - i] % MOD * nums[size - i - 1] % MOD) % MOD;
+        }
+        vector<vector<int>> ans(m, vector<int>(n));
+        vector<int> product;
+        for(int i = 0;i<size;i++){
+            if(i == 0){
+                product.push_back(suffix[i+1] % MOD);
+            }
+            else if(i == size - 1){
+                product.push_back(prefix[i-1] % MOD);
+            }
+            else{
+                product.push_back((prefix[i-1] % MOD * suffix[i+1] % MOD) % MOD);
+            }
+        }
+
+        int idx = 0;
+        for(int i = 0;i<m;i++){
+            for(int j = 0;j<n;j++){
+                ans[i][j] = product[idx];
+                idx++;
+            }
+        }
+        return ans;
+    }
+};
