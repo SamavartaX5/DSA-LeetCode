@@ -1,0 +1,72 @@
+class Solution {
+public:
+    bool canPartitionGrid(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+
+        vector<long long> prefix_row(m), prefix_col(n), suffix_row(m), suffix_col(n);
+        
+
+        //******PREFIX******
+        long long first_sum = 0;
+        for(int j = 0;j<n;j++){
+            first_sum += 1LL * grid[0][j];
+        }
+        prefix_row[0] = first_sum;
+        for(int i = 1;i<m;i++){
+            prefix_row[i] = accumulate(grid[i].begin(), grid[i].end(), 0LL) + prefix_row[i-1];
+            
+        }
+        first_sum = 0;
+        for(int i = 0;i<m;i++){
+            first_sum += 1LL*grid[i][0];
+        }
+        prefix_col[0] = first_sum;
+        for(int j = 1;j<n;j++){
+            long long sum1 = 0;
+            for(int i = 0;i<m;i++){
+                sum1 += 1LL*grid[i][j];
+            }
+            prefix_col[j] = sum1 + prefix_col[j-1];
+        }
+
+
+
+        // ****** SUFFIX ******
+        first_sum = 0;
+        for(int i = 0;i<m;i++){
+            first_sum += 1LL*grid[i][n-1];
+        }
+        suffix_col[n-1] = first_sum;
+
+        for(int j = n-2;j>=0;j--){
+            long long sum = 0;
+            for(int i = 0;i<m;i++){
+                sum += 1LL*grid[i][j];
+            }
+            suffix_col[j] = suffix_col[j+1] + sum;
+        }
+
+        first_sum = 0;
+        for(int j = 0;j<n;j++){
+            first_sum += grid[m-1][j];
+        }
+        suffix_row[m-1] = first_sum;
+        for(int i = m-2;i>=0;i--){
+            suffix_row[i] = accumulate(grid[i].begin(), grid[i].end(), 0LL) + suffix_row[i+1];
+        }
+
+        //CHECK FOR ROWS
+        
+        for(int i = 1;i<m;i++){
+            if(prefix_row[i - 1] == suffix_row[i]) return true;
+        }
+
+
+        //CHECK FOR COLUMNS
+
+        for(int j = 1;j<n;j++){
+            if(prefix_col[j-1] == suffix_col[j]) return true;
+        }
+        return false;
+    }
+};
