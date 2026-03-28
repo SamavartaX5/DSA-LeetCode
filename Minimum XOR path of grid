@@ -1,0 +1,59 @@
+/*
+You pretty much have to follow the minimum path sum dfs + dp technique to solve this, just that for XOR you won't have a monotone condition so take all values and then find out the minimum of them
+*/
+
+class Solution {
+public:
+    vector<vector<unordered_set<int>>> dp;
+    // unordered_set<int> dfs(int i, int j, int m, int n, vector<vector<int>>& grid){
+    //     if(i == m-1 && j == n-1) return {grid[i][j]};
+        
+    //     if(!dp[i][j].empty()) return dp[i][j];
+        
+    //     unordered_set<int> ans;
+        
+    //     if(i+1 < m){
+    //         auto down = dfs(i+1, j, m, n, grid);
+    //         for(auto &val : down){
+    //             ans.insert(val ^ grid[i][j]);
+    //         }
+    //     }
+    //     if(j+1 < n){
+    //         auto right = dfs(i, j+1, m, n, grid);
+    //         for(auto &val : right){
+    //             ans.insert(val ^ grid[i][j]);
+    //         }
+    //     }
+
+        
+        
+    //     return dp[i][j] = ans;
+    // }
+    int minCost(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+
+        dp.assign(m, vector<unordered_set<int>>(n));
+
+        dp[0][0].insert(grid[0][0]);
+
+        for(int i = 0;i<m;i++){
+            for(int j = 0;j<n;j++){
+                for(auto val : dp[i][j]){
+
+                    if(i + 1 < m){
+                        dp[i+1][j].insert(val ^ grid[i+1][j]);
+                    }
+
+                    if(j + 1 < n){
+                        dp[i][j+1].insert(val ^ grid[i][j+1]);
+                    }
+                }
+            }
+        }
+        int ans = INT_MAX;
+        for(auto val : dp[m-1][n-1]){
+            ans = min(ans, (int)val);
+        }
+        return ans;
+    }
+};
